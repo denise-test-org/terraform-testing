@@ -12,31 +12,11 @@ terraform {
     aws = {
       source = "hashicorp/aws"
     }
-    bufo = {
-      source = "austinvalle/bufo"
-    }
-  }
+   }
 }
 
 provider "aws" {
   region = "us-east-1"
-}
-
-resource "terraform_data" "test-all-separate" {
-  input = "bufo-test"
-
-  lifecycle {
-    action_trigger {
-      events  = [before_create]
-      actions = [action.bufo_print.awesome]
-    }
-  }
-}
-
-action "bufo_print" "awesome" {
-  config {
-    name = "awesomebufo"
-  }
 }
 
 # IAM role for Lambda execution
@@ -85,5 +65,26 @@ resource "aws_lambda_function" "example" {
   tags = {
     Environment = "production"
     Application = "example"
+  }
+}
+
+action "aws_lambda_invoke" "example" {
+  config {
+    function_name = aws_lambda_function.example.function_name
+    payload = jsonencode({
+      length = 10
+      width = 5
+    })
+  }
+}
+
+resource "terraform_data" "example" {
+  input = "trigger-lambda"
+
+  lifecycle {
+    action_trigger {
+      events  = [before_create, before_update]
+      actions = [action.aws_lambda_invoke.example]
+    }
   }
 }
