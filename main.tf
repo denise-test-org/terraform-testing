@@ -41,7 +41,7 @@ resource "aws_iam_role" "example" {
 # Package the Lambda function code
 data "archive_file" "example" {
   type        = "zip"
-  source_file = "${path.module}/lambda/index.js"
+  source_file = "${path.module}/lambda/index.mjs"
   output_path = "${path.module}/lambda/function.zip"
 }
 
