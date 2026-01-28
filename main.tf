@@ -48,7 +48,7 @@ data "archive_file" "example" {
 # Lambda function
 resource "aws_lambda_function" "example" {
   filename         = data.archive_file.example.output_path
-  function_name    = "calculate_rectangle_area_demo_days"
+  function_name    = "hello_demo_days"
   role             = aws_iam_role.example.arn
   handler          = "index.handler"
   source_code_hash = data.archive_file.example.output_base64sha256
