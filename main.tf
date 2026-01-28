@@ -48,7 +48,7 @@ data "archive_file" "example" {
 # Lambda function
 resource "aws_lambda_function" "example" {
   filename         = data.archive_file.example.output_path
-  function_name    = "example_lambda_function"
+  function_name    = "calculate_rectangle_area_demo_days"
   role             = aws_iam_role.example.arn
   handler          = "index.handler"
   source_code_hash = data.archive_file.example.output_base64sha256
@@ -65,26 +65,5 @@ resource "aws_lambda_function" "example" {
   tags = {
     Environment = "production"
     Application = "example"
-  }
-}
-
-action "aws_lambda_invoke" "example" {
-  config {
-    function_name = aws_lambda_function.example.function_name
-    payload = jsonencode({
-      length = 10
-      width = 5
-    })
-  }
-}
-
-resource "terraform_data" "example" {
-  input = "trigger-lambda"
-
-  lifecycle {
-    action_trigger {
-      events  = [before_create, before_update]
-      actions = [action.aws_lambda_invoke.example]
-    }
   }
 }
