@@ -67,3 +67,24 @@ resource "aws_lambda_function" "example" {
     Application = "example"
   }
 }
+
+action "aws_lambda_invoke" "example" {
+  config {
+    function_name = aws_lambda_function.example.function_name
+    payload = jsonencode({
+      length = 10
+      width = 5
+    })
+  }
+}
+
+resource "terraform_data" "example" {
+  input = "trigger-lambda"
+
+  lifecycle {
+    action_trigger {
+      events  = [before_create, before_update]
+      actions = [action.aws_lambda_invoke.example]
+    }
+  }
+}
